@@ -41,7 +41,7 @@ public sealed class GameTelemetryPublisher : IDisposable
                 throw new ArgumentException("Telemetry snapshot is too large.", nameof(snapshot));
 
             // Clear first, write UTF-8 JSON, then flush so readers never treat old trailing bytes as current data.
-            _view.Write(0, new byte[Capacity], 0, Capacity);
+            _view.WriteArray(0, new byte[Capacity], 0, Capacity);
             _view.WriteArray(0, data, 0, data.Length);
             _view.Flush();
         }
