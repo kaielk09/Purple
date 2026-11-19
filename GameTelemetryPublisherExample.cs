@@ -1,5 +1,5 @@
 // Example publisher to embed in YOUR game. It writes only the game's own telemetry snapshot.
-// Use the same key as Purple's connector field. Shared memory name: PurpleTelemetry_<key>.
+// Shared memory name: PurpleTelemetry_<key>
 using System;
 using System.IO.MemoryMappedFiles;
 using System.Text;
@@ -22,11 +22,11 @@ public sealed class GameTelemetryPublisher : IDisposable
 
     public void Publish(object snapshot)
     {
-        // Snapshot should contain only the whitelisted telemetry fields documented in README.
+        // Snapshot should contain only the telemetry fields documented in README.
         var json = JsonSerializer.Serialize(snapshot);
         var data = Encoding.UTF8.GetBytes(json);
         if (data.Length >= Capacity) throw new ArgumentException("Telemetry snapshot is too large.");
-        _view.Write(0, new byte[Capacity]); // clear stale bytes first
+        _view.WriteArray(0, new byte[Capacity], 0, Capacity); // clear old snapshot
         _view.WriteArray(0, data, 0, data.Length);
     }
 
