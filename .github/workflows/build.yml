@@ -1,0 +1,28 @@
+name: Build Purple
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore
+        run: dotnet restore PurpleConnector.csproj
+      - name: Build
+        run: dotnet build PurpleConnector.csproj --configuration Release --no-restore
+      - name: Publish Windows x64
+        run: dotnet publish PurpleConnector.csproj --configuration Release --runtime win-x64 --self-contained false -p:PublishSingleFile=true -o publish
+      - name: Upload app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Purple-win-x64
+          path: publish/
