@@ -22,8 +22,8 @@ public sealed class PurpleOverlayForm : Form
         ShowInTaskbar = false;
         TopMost = true;
         StartPosition = FormStartPosition.CenterScreen;
-        Size = new Size(376, 492);
-        MinimumSize = new Size(376, 492);
+        Size = new Size(376, 520);
+        MinimumSize = new Size(376, 520);
         BackColor = Color.FromArgb(20, 18, 27);
         ForeColor = Color.FromArgb(238, 234, 247);
         Font = new Font("Segoe UI", 9F);
@@ -57,7 +57,7 @@ public sealed class PurpleOverlayForm : Form
         var separator = new Panel { Location = new Point(17, 168), Size = new Size(342, 1), BackColor = Color.FromArgb(53, 44, 66) };
         var section = new Label { Text = "VISUAL CONTROLS", ForeColor = Color.FromArgb(145, 130, 166), Font = new Font("Segoe UI", 8, FontStyle.Bold), AutoSize = true, Location = new Point(18, 181) };
 
-        var controls = new FlowLayoutPanel { Location = new Point(18, 205), Size = new Size(340, 222), FlowDirection = FlowDirection.TopDown, WrapContents = false, BackColor = Color.Transparent, Margin = Padding.Empty };
+        var controls = new FlowLayoutPanel { Location = new Point(18, 205), Size = new Size(340, 244), FlowDirection = FlowDirection.TopDown, WrapContents = false, BackColor = Color.Transparent, Margin = Padding.Empty };
         controls.Controls.Add(MakeToggle("State", true));
         controls.Controls.Add(MakeSlider("Min Damage", 1, 100, 20, " HP"));
         controls.Controls.Add(MakeMode());
@@ -67,8 +67,8 @@ public sealed class PurpleOverlayForm : Form
         controls.Controls.Add(MakeToggle("Status", true));
         controls.Controls.Add(MakeToggle("Damage", true));
 
-        var footer = new Label { Text = "DISPLAY ONLY  •  NO GAME ACTIONS", ForeColor = Color.FromArgb(132, 121, 151), AutoSize = true, Location = new Point(18, 457) };
-        var disconnectButton = new Button { Text = "DISCONNECT", Location = new Point(236, 448), Size = new Size(123, 30), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(104, 67, 166), ForeColor = Color.White, Font = new Font("Segoe UI", 8, FontStyle.Bold), Cursor = Cursors.Hand };
+        var footer = new Label { Text = "DISPLAY ONLY  •  NO GAME ACTIONS", ForeColor = Color.FromArgb(132, 121, 151), AutoSize = true, Location = new Point(18, 487) };
+        var disconnectButton = new Button { Text = "DISCONNECT", Location = new Point(236, 478), Size = new Size(123, 30), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(104, 67, 166), ForeColor = Color.White, Font = new Font("Segoe UI", 8, FontStyle.Bold), Cursor = Cursors.Hand };
         disconnectButton.FlatAppearance.BorderSize = 0;
         disconnectButton.Click += (_, _) => disconnect();
 
