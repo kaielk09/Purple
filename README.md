@@ -44,3 +44,9 @@ The shared-memory block is UTF-8 JSON (up to 4096 bytes), with a null terminator
 ```
 
 See `Telemetry.cs` for the allowed fields.
+
+
+## Floating Purple panel
+After you click **Connect**, Purple waits until the channel contains a valid telemetry snapshot. It then hides the connector window and opens a draggable, always-on-top **Purple** panel. The panel includes the visual State, Min Damage, Mode, Multi-point, Budget, Every, Status, and Damage controls. These controls only change their on-screen appearance; they do not control aiming, targeting, or any game action.
+
+Click **Disconnect** on the floating panel to close it and return to the connector window. The panel is shown only while the telemetry connection is active.
