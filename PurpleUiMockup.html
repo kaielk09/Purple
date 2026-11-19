@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Purple AutoWall — UI Mockup</title>
+<style>
+:root{--bg:#0c0b10;--panel:#15131b;--panel2:#1c1924;--purple:#9b72ff;--text:#eeeaf7;--muted:#888294;--line:#292532}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 25% 10%,#1c142b,#0b0a0f 60%);height:100vh;color:var(--text);font:14px 'Segoe UI',Arial;display:grid;place-items:center}
+.window{width:360px;background:var(--panel);border:1px solid #322842;border-radius:10px;box-shadow:0 20px 65px #0009;overflow:hidden;user-select:none}
+.titlebar{height:44px;background:#191520;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line);cursor:move}
+.brand{font-weight:800;letter-spacing:1.5px;color:#b392ff}.tag{font-size:10px;color:var(--muted);letter-spacing:1px}
+.content{padding:14px 16px 16px}.heading{font-size:15px;font-weight:700;margin-bottom:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:37px;border-bottom:1px solid #24212c}.row:last-child{border:0}.label{font-size:12px;color:#d8d3e2}.value{font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.switch{width:34px;height:18px;border-radius:12px;background:#3a3544;position:relative;cursor:pointer;transition:.15s;border:0}.switch:after{content:'';position:absolute;width:14px;height:14px;top:2px;left:2px;background:#b4acbe;border-radius:50%;transition:.15s}.switch.on{background:#6d43b5}.switch.on:after{left:18px;background:white}
+select{background:#211b2b;border:1px solid #393146;color:#eee;border-radius:5px;padding:5px 8px;font-size:11px;outline:none}
+input[type=range]{width:130px;accent-color:var(--purple)}.rangebox{display:flex;align-items:center;gap:8px}
+.footer{margin-top:13px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted)}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#6b6478;margin-right:6px}.dot.active{background:#b28aff;box-shadow:0 0 8px #8b5cf6}.hint{font-size:10px;color:#70697f;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="window" id="window">
+ <div class="titlebar" id="drag">
+  <span class="brand">PURPLE</span><span class="tag">UI MOCKUP · v3</span>
+ </div>
+ <div class="content">
+  <div class="heading">Purple AutoWall</div>
+  <div class="row"><span class="label">State</span><button class="switch on" aria-label="State toggle"></button></div>
+  <div class="row"><span class="label">Min Damage</span><div class="rangebox"><input type="range" min="1" max="100" value="20" data-label="Min Damage"><span class="value">20 HP</span></div></div>
+  <div class="row"><span class="label">Mode</span><select><option>Any</option><option selected>Head Priority</option><option>Head Only</option></select></div>
+  <div class="row"><span class="label">Multi-point</span><button class="switch on" aria-label="Multi-point toggle"></button></div>
+  <div class="row"><span class="label">Budget</span><div class="rangebox"><input type="range" min="4" max="128" value="24" data-label="Budget"><span class="value">24</span></div></div>
+  <div class="row"><span class="label">Every</span><div class="rangebox"><input type="range" min="1" max="10" value="2" data-label="Every"><span class="value">2 fr.</span></div></div>
+  <div class="row"><span class="label">Status</span><button class="switch on" aria-label="Status toggle"></button></div>
+  <div class="row"><span class="label">Damage</span><button class="switch on" aria-label="Damage toggle"></button></div>
+  <div class="footer"><span><i class="dot active"></i>VISUAL CONTROLS ONLY</span><span>NO GAME LINK</span></div>
+  <div class="hint">Drag the title bar to move this panel. Controls only change their visual state.</div>
+ </div>
+</div>
+<script>
+document.querySelectorAll('.switch').forEach(s=>s.addEventListener('click',()=>s.classList.toggle('on')));
+document.querySelectorAll('input[type=range]').forEach(r=>r.addEventListener('input',()=>{
+ let v=r.parentElement.querySelector('.value');
+ v.textContent=r.value+(r.dataset.label==='Min Damage'?' HP':r.dataset.label==='Every'?' fr.':'');
+}));
+const w=document.getElementById('window'),d=document.getElementById('drag');let active=false,dx=0,dy=0;
+d.addEventListener('pointerdown',e=>{active=true;const rect=w.getBoundingClientRect();dx=e.clientX-rect.left;dy=e.clientY-rect.top;d.setPointerCapture(e.pointerId)});
+d.addEventListener('pointermove',e=>{if(!active)return;w.style.position='fixed';w.style.margin='0';w.style.left=(e.clientX-dx)+'px';w.style.top=(e.clientY-dy)+'px'});
+d.addEventListener('pointerup',()=>active=false);d.addEventListener('pointercancel',()=>active=false);
+</script>
+</body></html>
