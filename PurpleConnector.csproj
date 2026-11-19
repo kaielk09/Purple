@@ -5,5 +5,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Purple</AssemblyName>
+    <RootNamespace>PurpleConnector</RootNamespace>
   </PropertyGroup>
 </Project>
