@@ -18,48 +18,55 @@ public sealed class MainForm : Form
     private MemoryMappedFile? map;
     private PurpleOverlayForm? overlay;
     private bool connected;
-    private bool hasShownOverlay;
+    private bool overlayShown;
 
     public MainForm()
     {
         Text = "Purple";
-        Size = new Size(470, 450);
-        MinimumSize = new Size(470, 450);
+        Size = new Size(500, 470);
+        MinimumSize = new Size(500, 470);
         StartPosition = FormStartPosition.CenterScreen;
         BackColor = Color.FromArgb(12, 10, 18);
         ForeColor = Color.White;
         Font = new Font("Segoe UI", 10);
+        FormBorderStyle = FormBorderStyle.FixedSingle;
+        MaximizeBox = false;
 
-        var title = new Label { Text = "PURPLE", ForeColor = Color.FromArgb(160, 100, 255), Font = new Font("Segoe UI", 24, FontStyle.Bold), AutoSize = true, Location = new Point(26, 22) };
-        var subtitle = new Label { Text = "GAME TELEMETRY CONNECTOR", ForeColor = Color.Gray, AutoSize = true, Location = new Point(30, 66) };
-        var label = new Label { Text = "GAME KEY", ForeColor = Color.Gainsboro, AutoSize = true, Location = new Point(30, 112) };
-        gameKey.SetBounds(30, 138, 390, 34);
-        gameKey.BackColor = Color.FromArgb(32, 25, 43);
+        var title = new Label { Text = "PURPLE", ForeColor = Color.FromArgb(174, 132, 255), Font = new Font("Segoe UI", 27, FontStyle.Bold), AutoSize = true, Location = new Point(28, 24) };
+        var subtitle = new Label { Text = "GAME TELEMETRY  /  DESKTOP CLIENT", ForeColor = Color.FromArgb(139, 130, 153), AutoSize = true, Location = new Point(33, 73) };
+        var line = new Panel { BackColor = Color.FromArgb(65, 46, 91), Location = new Point(30, 105), Size = new Size(420, 1) };
+        var label = new Label { Text = "TELEMETRY KEY", ForeColor = Color.Gainsboro, AutoSize = true, Location = new Point(32, 132) };
+        gameKey.SetBounds(32, 160, 418, 38);
+        gameKey.BackColor = Color.FromArgb(30, 25, 40);
         gameKey.ForeColor = Color.White;
         gameKey.BorderStyle = BorderStyle.FixedSingle;
         gameKey.Text = "MyGame";
+        gameKey.Font = new Font("Segoe UI", 11);
 
-        status.Text = "● DISCONNECTED";
-        status.ForeColor = Color.IndianRed;
+        status.Text = "●  DISCONNECTED";
+        status.ForeColor = Color.FromArgb(235, 111, 125);
         status.AutoSize = true;
-        status.Location = new Point(30, 190);
-        status.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        status.Location = new Point(32, 222);
+        status.Font = new Font("Segoe UI", 10, FontStyle.Bold);
 
         connectButton.Text = "CONNECT";
-        connectButton.SetBounds(30, 224, 390, 42);
+        connectButton.SetBounds(32, 258, 418, 46);
         connectButton.FlatStyle = FlatStyle.Flat;
-        connectButton.BackColor = Color.FromArgb(132, 76, 220);
+        connectButton.BackColor = Color.FromArgb(119, 75, 205);
         connectButton.ForeColor = Color.White;
+        connectButton.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         connectButton.FlatAppearance.BorderSize = 0;
         connectButton.Click += (_, _) => ToggleConnection();
 
-        details.Text = "Enter the telemetry key published by your own game. The Purple panel appears after valid telemetry arrives.";
+        details.Text = "Enter the key used by your own game's telemetry publisher. Purple displays the floating panel after valid data arrives.";
         details.ForeColor = Color.FromArgb(155, 148, 169);
-        details.Location = new Point(30, 286);
-        details.Size = new Size(390, 130);
+        details.Location = new Point(33, 326);
+        details.Size = new Size(415, 75);
 
-        Controls.AddRange(new Control[] { title, subtitle, label, gameKey, status, connectButton, details });
-        poll.Interval = 800;
+        var foot = new Label { Text = "PURPLE  •  VISUAL TELEMETRY CLIENT", ForeColor = Color.FromArgb(95, 87, 108), AutoSize = true, Location = new Point(32, 420) };
+        Controls.AddRange(new Control[] { title, subtitle, line, label, gameKey, status, connectButton, details, foot });
+
+        poll.Interval = 500;
         poll.Tick += (_, _) => ReadSnapshot();
         FormClosing += (_, _) => Disconnect(false);
     }
@@ -70,7 +77,7 @@ public sealed class MainForm : Form
         var key = SanitizeKey(gameKey.Text);
         if (key.Length == 0)
         {
-            details.Text = "Please enter a valid telemetry key.";
+            details.Text = "Enter a key containing letters, numbers, '_' or '-'.";
             return;
         }
 
@@ -78,24 +85,25 @@ public sealed class MainForm : Form
         {
             map = MemoryMappedFile.OpenExisting($"PurpleTelemetry_{key}", MemoryMappedFileRights.Read);
             connected = true;
-            hasShownOverlay = false;
             connectButton.Text = "DISCONNECT";
-            status.Text = "● CONNECTED — WAITING FOR DATA";
+            connectButton.BackColor = Color.FromArgb(72, 52, 91);
+            status.Text = "●  CHANNEL OPEN — WAITING FOR DATA";
             status.ForeColor = Color.MediumPurple;
-            details.Text = "Channel opened. The floating Purple panel will appear when a valid telemetry snapshot is received.";
+            details.Text = "Channel found. Waiting for a valid, fresh telemetry snapshot…";
+            gameKey.Enabled = false;
             poll.Start();
             ReadSnapshot();
         }
         catch (FileNotFoundException)
         {
-            status.Text = "● CHANNEL NOT FOUND";
-            status.ForeColor = Color.IndianRed;
-            details.Text = $"No channel named PurpleTelemetry_{key} exists. Start your game's telemetry publisher first.";
+            status.Text = "●  CHANNEL NOT FOUND";
+            status.ForeColor = Color.FromArgb(235, 111, 125);
+            details.Text = $"No channel named PurpleTelemetry_{key}. Start the publisher inside your own game first.";
         }
         catch (Exception ex)
         {
-            status.Text = "● CONNECTION ERROR";
-            status.ForeColor = Color.IndianRed;
+            status.Text = "●  CONNECTION ERROR";
+            status.ForeColor = Color.FromArgb(235, 111, 125);
             details.Text = ex.Message;
             map?.Dispose();
             map = null;
@@ -111,30 +119,37 @@ public sealed class MainForm : Form
             byte[] bytes = new byte[4096];
             view.ReadArray(0, bytes, 0, bytes.Length);
             int length = Array.IndexOf(bytes, (byte)0);
-            if (length < 0) length = bytes.Length;
-            string json = Encoding.UTF8.GetString(bytes, 0, length).Trim();
-            var telemetry = Telemetry.Parse(json);
-            if (telemetry is null || string.IsNullOrWhiteSpace(telemetry.Game))
-            {
-                status.Text = "● CONNECTED — WAITING FOR DATA";
-                status.ForeColor = Color.MediumPurple;
-                return;
-            }
+            if (length <= 0) { SetWaiting(); return; }
+            var telemetry = Telemetry.Parse(Encoding.UTF8.GetString(bytes, 0, length));
+            if (telemetry is null || !telemetry.IsFresh()) { SetWaiting(); return; }
 
-            if (!hasShownOverlay)
+            if (!overlayShown)
             {
                 overlay = new PurpleOverlayForm(() => Disconnect(true));
                 overlay.Show();
-                hasShownOverlay = true;
+                overlayShown = true;
                 Hide();
             }
             overlay?.UpdateTelemetry(telemetry);
         }
         catch (Exception ex)
         {
-            status.Text = "● READ ERROR";
-            status.ForeColor = Color.IndianRed;
-            details.Text = ex.Message;
+            details.Text = "Telemetry read failed: " + ex.Message;
+            status.Text = "●  READ ERROR";
+            status.ForeColor = Color.FromArgb(235, 111, 125);
+        }
+    }
+
+    private void SetWaiting()
+    {
+        if (!overlayShown)
+        {
+            status.Text = "●  CONNECTED — WAITING FOR FRESH DATA";
+            status.ForeColor = Color.MediumPurple;
+        }
+        else
+        {
+            overlay?.SetStale();
         }
     }
 
@@ -144,19 +159,22 @@ public sealed class MainForm : Form
         connected = false;
         map?.Dispose();
         map = null;
-        overlay?.Close();
-        overlay = null;
-        hasShownOverlay = false;
+        if (overlay is not null)
+        {
+            overlay.Close();
+            overlay.Dispose();
+            overlay = null;
+        }
+        overlayShown = false;
         connectButton.Text = "CONNECT";
-        status.Text = "● DISCONNECTED";
-        status.ForeColor = Color.IndianRed;
+        connectButton.BackColor = Color.FromArgb(119, 75, 205);
+        status.Text = "●  DISCONNECTED";
+        status.ForeColor = Color.FromArgb(235, 111, 125);
         details.Text = "Connection closed.";
+        gameKey.Enabled = true;
         if (restoreWindow && !IsDisposed) Show();
     }
 
-    private static string SanitizeKey(string text)
-    {
-        var chars = text.Trim().Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray();
-        return new string(chars);
-    }
+    private static string SanitizeKey(string text) =>
+        new string((text ?? "").Trim().Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').Take(64).ToArray());
 }
